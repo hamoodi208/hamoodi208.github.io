@@ -49,6 +49,255 @@
       pointer-events: none;
       z-index: 0;
       opacity: 0;
+      
+    }
+    .dragon-wrap svg {
+      width: 100%; height: auto;
+      fill: #cc1111;
+    }
+    @keyframes dragonReveal {
+      0%   { opacity: 0; transform: translateY(-50%) scale(0.95); }
+      100% { opacity: 1;  transform: translateY(-50%) scale(1); }
+    }
+    @keyframes dragonPulse {
+      0%, 100% {
+        opacity: 0.18;
+        filter: drop-shadow(0 0 12px rgba(220,30,30,0.6)) drop-shadow(0 0 40px rgba(200,20,20,0.35)) drop-shadow(0 0 90px rgba(180,10,10,0.2));
+      }
+      50% {
+        opacity: 0.28;
+        filter: drop-shadow(0 0 25px rgba(255,60,60,1)) drop-shadow(0 0 70px rgba(230,30,30,0.7)) drop-shadow(0 0 140px rgba(200,10,10,0.4));
+      }
+    }
+    .dragon-wrap.pulse {
+      animation: dragonPulse 3.5s ease-in-out infinite;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); background: rgba(8,6,8,0.88); backdrop-filter: blur(14px);
+    }
+    .nav-logo { font-family: var(--font-mono); font-size: 0.78rem; color: var(--red); letter-spacing: 0.15em; text-transform: uppercase; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--red-bright); }
+
+    .hero {
+      position: relative; min-height: 100vh; display: flex; align-items: center;
+      padding: 8rem 2rem 4rem; border-bottom: 1px solid var(--border); overflow: hidden;
+    }
+    .hero-inner { max-width: 900px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+    .prompt-line { font-family: var(--font-mono); font-size: 0.75rem; color: var(--red); margin-bottom: 1.2rem; opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s; }
+    .prompt-line span { color: var(--muted); }
+    h1 { font-family: var(--font-display); font-size: clamp(5rem, 14vw, 11rem); line-height: 0.88; letter-spacing: 0.02em; color: #fff; opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s; }
+    h1 em { font-style: normal; color: var(--red); text-shadow: 0 0 40px var(--red-glow), 0 0 80px var(--red-glow); }
+    .hero-tagline { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); margin-top: 1.6rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0; animation: fadeUp 0.7s ease forwards 0.6s; }
+    .hero-tagline span { color: var(--red); margin: 0 0.5rem; }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; right: 2rem; z-index: 1;
+      font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted);
+      letter-spacing: 0.2em; text-transform: uppercase; writing-mode: vertical-rl;
+      display: flex; align-items: center; gap: 0.6rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 1.2s;
+    }
+    .hero-scroll::before { content: ''; width: 1px; height: 40px; background: linear-gradient(to bottom, var(--red), transparent); }
+
+    main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 5rem 2rem 8rem; display: grid; gap: 5rem; }
+    .section-label { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.22em; color: var(--red); margin-bottom: 1.6rem; display: flex; align-items: center; gap: 0.8rem; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+
+    .about-block, .projects-block, .terminal-block { opacity: 0; transform: translateY(18px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .about-block.visible, .projects-block.visible, .terminal-block.visible { opacity: 1; transform: translateY(0); }
+
+    .about-text { font-size: 1.08rem; line-height: 1.82; color: var(--text); font-weight: 300; max-width: 660px; }
+    .about-text strong { color: #fff; font-weight: 500; }
+    .about-text .hl { color: var(--red-bright); font-family: var(--font-mono); font-size: 0.93em; }
+
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .project-card { background: var(--surface); padding: 2rem 1.6rem; transition: background 0.25s; position: relative; overflow: hidden; }
+    .project-card::after { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--red-dim); transition: background 0.2s; }
+    .project-card:hover { background: var(--surface2); }
+    .project-card:hover::after { background: var(--red); }
+    .project-num { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 0.8rem; }
+    .project-card h3 { font-family: var(--font-mono); font-size: 0.88rem; color: #fff; margin-bottom: 0.6rem; }
+    .project-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+    .project-tag { display: inline-block; margin-top: 1rem; font-family: var(--font-mono); font-size: 0.62rem; color: var(--red); border: 1px solid var(--red-dim); padding: 0.15rem 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .terminal { background: #050305; border: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.78rem; overflow: hidden; }
+    .terminal-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.55rem 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; } .dot.y { background: #febc2e; } .dot.g { background: #28c840; }
+    .terminal-title { margin-left: auto; color: var(--muted); font-size: 0.65rem; letter-spacing: 0.1em; }
+    .terminal-body { padding: 1.4rem 1.6rem; line-height: 2.1; }
+    .line { display: block; }
+    .line .p { color: var(--red); } .line .cmd { color: #fff; } .line .out { color: var(--muted); padding-left: 1rem; } .line .val { color: #f9a8a8; }
+    .cursor { display: inline-block; width: 8px; height: 1em; background: var(--red); vertical-align: text-bottom; animation: blink 1s step-end infinite; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @media (max-width: 600px) { h1 { font-size: 5.5rem; } .nav-links { gap: 1.2rem; } .hero-scroll { display: none; } .dragon-wrap { width: 90vw; right: -20%; } }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <nav>
+    <div class="nav-logo">Hamoodi</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+
+    <!-- Kali Linux dragon logo — inlined SVG, CC-BY-SA 4.0 via Wikimedia/icons8 -->
+    <div class="dragon-wrap" id="dragonWrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+        <path d="M46.125,38.868c-0.192-0.815-0.481-1.618-0.919-2.346c-0.871-1.466-2.199-2.585-3.594-3.489
+          c-1.409-0.901-2.916-1.624-4.458-2.219c-2.953-1.141-2.81-1.103-4.803-1.814c-4.416-1.574-6.868-3.914-7.022-6.452
+          c-0.074-1.229,1.126-5.234,6.074-4.282c1.175,0.226,2.287,0.543,3.382,1.037c1.009,0.456,3.954,1.884,4.986,3.917v0
+          c0.078,0.897,0.394,1.244,1.656,1.84c0.949,0.448,1.907,0.935,1.993,2.039c0.005,0.06,0.051,0.109,0.131,0.121
+          c0.052,0,0.1-0.031,0.121-0.081c0.182-0.439,0.915-0.989,1.461-0.839c0.063,0.016,0.119-0.009,0.148-0.061
+          c0.03-0.052,0.02-0.116-0.021-0.158l-0.863-0.854c-0.311-0.31-0.651-0.721-0.939-1.249c-0.078-0.142-0.145-0.282-0.204-0.417
+          c-0.038-0.094-0.076-0.187-0.114-0.281c-0.724-1.895-2.073-3.925-3.465-5.24c-0.756-0.727-1.588-1.367-2.475-1.913
+          c-0.891-0.538-1.819-1.016-2.833-1.302l-0.074,0.256c0.947,0.327,1.833,0.849,2.662,1.419c0.828,0.579,1.593,1.243,2.273,1.979
+          c0.971,1.032,1.736,2.23,2.282,3.512l-1.993-2.477l0.055,0.858l-1.633-1.841l0.101,0.862l-1.586-1.279l0.136,0.584
+          c-0.357-0.236-3.525-1.496-5.106-2.09s-4.705-3.524-3.804-7.232c0,0-1.477-0.574-2.535-0.965
+          c-1.043-0.376-2.09-0.717-3.14-1.046c-2.1-0.658-4.212-1.258-6.335-1.818c-2.123-0.557-4.26-1.062-6.409-1.508
+          c-2.15-0.441-4.312-0.834-6.5-1.053L2.722,3.319C4.875,3.65,7,4.152,9.109,4.701c2.108,0.555,4.202,1.166,6.279,1.829
+          c2.076,0.665,4.139,1.37,6.177,2.128c1.018,0.379,2.033,0.769,3.027,1.188c0.211,0.088,0.426,0.18,0.641,0.272
+          c-1.224-0.241-2.448-0.432-3.673-0.591c-2.211-0.281-4.424-0.458-6.639-0.558c-2.214-0.1-4.43-0.116-6.642-0.034
+          C6.068,9.021,3.856,9.194,1.674,9.568l0.043,0.304c2.18-0.224,4.375-0.246,6.563-0.183c2.189,0.067,4.374,0.231,6.547,0.477
+          c2.172,0.246,4.335,0.567,6.469,0.986c1.316,0.261,2.624,0.564,3.903,0.921c-1.011-0.101-2.017-0.127-3.014-0.115
+          c-1.977,0.03-3.926,0.247-5.848,0.574c-1.922,0.33-3.818,0.773-5.675,1.346c-1.851,0.579-3.681,1.267-5.361,2.249l0.116,0.208
+          c1.72-0.828,3.568-1.358,5.426-1.779c1.862-0.414,3.751-0.698,5.644-0.868c1.891-0.168,3.792-0.224,5.663-0.101
+          c1.664,0.11,3.317,0.363,4.83,0.849c0,0,0,0,0,0c0.065,0.445,0.366,1.346,0.511,1.796c0,0,0,0,0,0
+          c-4.255,1.957-4.794,5.477-4.446,7.365c0.409,2.214,2.011,3.902,3.904,4.995c1.567,0.891,3.168,1.459,4.726,2.047
+          c1.555,0.583,3.095,1.143,4.467,1.918c1.352,0.747,2.476,1.901,3.391,3.21c1.837,2.638,2.572,5.964,2.792,9.245l0.365-0.01
+          c0.008-3.323-0.47-6.802-2.252-9.812c-0.588-0.986-1.314-1.921-2.171-2.733c0.992,0.384,1.961,0.818,2.887,1.333
+          c1.373,0.779,2.667,1.749,3.548,3.051c0.444,0.647,0.755,1.375,0.983,2.133c0.202,0.767,0.295,1.565,0.329,2.371h0.312
+          C46.337,40.522,46.291,39.69,46.125,38.868z"/>
+      </svg>
+    </div>
+
+    <div class="hero-inner">
+      <div class="prompt-line"><span>root@kali:~$</span> ./hamoodi --portfolio</div>
+      <h1>HAM<em>OO</em>DI</h1>
+      <p class="hero-tagline">Cybersecurity Student <span>/</span> Iowa State University</p>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+  <main>
+    <section id="about" class="about-block">
+      <div class="section-label">// about me</div>
+      <p class="about-text">
+        I'm <strong>Mohammed</strong>, a cybersecurity freshman at <strong>Iowa State University</strong>
+        with a deep love for computers, especially the security part of them. I began exploring cybersecurity at the age of 13 with the goal of becoming an ethical hacker, and today I'm continuing to develop those skills at a deeper level. I'm mostly interested in
+        <span class="hl">offensive security</span>, and I plan on becoming an exploit developer in the future.
+      </p>
+    </section>
+
+    <section id="projects" class="projects-block">
+      <div class="section-label">// projects</div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-num">01</div>
+          <h3>Minimal HTTP server using C</h3>
+          <p>A custom HTTP server that I built using C, then hosted on a Google Cloud Virtual Machine</p>
+          <span class="project-tag">HTTP &amp; TCP · C</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="terminal-block">
+      <div class="section-label">// profile.json</div>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot r"></div>
+          <div class="dot y"></div>
+          <div class="dot g"></div>
+          <span class="terminal-title">hamoodi@kali — bash — 80×24</span>
+        </div>
+        <div class="terminal-body">
+          <span class="line"><span class="p">hamoodi@kali</span><span class="cmd"> cat profile.json</span></span>
+          <span class="line out">{</span>
+          <span class="line out">&nbsp;&nbsp;"name": <span class="val">"Mohammed"</span>,</span>
+          <span class="line out">&nbsp;&nbsp;"major": <span class="val">"Cybersecurity Engineering"</span>,</span>
+          <span class="line out">&nbsp;&nbsp;"interests": <span class="val">["network protocols", "binary exploitation", "active directory"]</span>,</span>
+          <span class="line out">&nbsp;&nbsp;"status": <span class="val">"Actively learning"</span>,</span>
+          <span class="line out">}</span>
+          <span class="line"><span class="p">hamoodi@kali</span><span class="cmd"> </span><span class="cursor"></span></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.about-block, .projects-block, .terminal-block')
+      .forEach(el => observer.observe(el));
+
+    setTimeout(() => document.getElementById('dragonWrap').classList.add('pulse'), 0);
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hamoodi's portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080608;
+      --surface: #0f0a0a;
+      --surface2: #140d0d;
+      --border: #2a1515;
+      --red: #e03030;
+      --red-bright: #ff4444;
+      --red-glow: rgba(224,48,48,0.12);
+      --red-dim: #8b1a1a;
+      --text: #d4c4c4;
+      --muted: #5a3f3f;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; cursor: crosshair; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+      pointer-events: none; z-index: 100;
+    }
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 44px 44px; opacity: 0.25; pointer-events: none; z-index: 0;
+    }
+    .bg-glow {
+      position: fixed; top: -300px; right: -200px; width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(180,30,30,0.07) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* KALI DRAGON */
+    .dragon-wrap {
+      position: absolute;
+      top: 50%; right: -2%;
+      transform: translateY(-50%);
+      width: min(580px, 60vw);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
       animation: dragonReveal 0s ease forwards 0.8s;
     }
     .dragon-wrap svg {
