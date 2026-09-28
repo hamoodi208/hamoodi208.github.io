@@ -114,11 +114,15 @@
     .about-text strong { color: #fff; font-weight: 500; }
     .about-text .hl { color: var(--red-bright); font-family: var(--font-mono); font-size: 0.93em; }
 
-    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
     .project-card { background: var(--surface); padding: 2rem 1.6rem; transition: background 0.25s; position: relative; overflow: hidden; }
     .project-card::after { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--red-dim); transition: background 0.2s; }
     .project-card:hover { background: var(--surface2); }
     .project-card:hover::after { background: var(--red); }
+    a.project-card { display: block; text-decoration: none; color: inherit; cursor: pointer; }
+    a.project-card:focus-visible { outline: 2px solid var(--red-bright); outline-offset: -2px; }
+    .project-link { display: block; margin-top: 1.1rem; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); }
+    a.project-card:hover .project-link { color: var(--red-bright); }
     .project-num { font-family: var(--font-mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; margin-bottom: 0.8rem; }
     .project-card h3 { font-family: var(--font-mono); font-size: 0.88rem; color: #fff; margin-bottom: 0.6rem; }
     .project-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
@@ -211,6 +215,14 @@
           <p>A custom HTTP server that I built using C, then hosted on a Google Cloud Virtual Machine</p>
           <span class="project-tag">HTTP &amp; TCP · C</span>
         </div>
+
+        <a class="project-card" href="apk-hound.html">
+          <div class="project-num">02</div>
+          <h3>APK Hound</h3>
+          <p>A pipeline that analyzes Android APKs for the network API calls most likely to appear in malware, combining static analysis with Soot and FlowDroid and dynamic analysis with Frida. Includes case studies on AndroRAT and iBanking.</p>
+          <span class="project-tag">Soot · FlowDroid · Frida</span>
+          <span class="project-link">Read the write-up</span>
+        </a>
       </div>
     </section>
 
